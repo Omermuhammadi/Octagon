@@ -6,7 +6,7 @@ services:
     container_name: octagon-oracle-web
     restart: always
     ports:
-      - "3000:3000"
+      - "3001:3001"
     environment:
       - NODE_ENV=production
     # Add any other environment variables here, e.g.:

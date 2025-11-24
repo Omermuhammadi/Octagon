@@ -74,7 +74,7 @@ You can run the application using the pre-built image from Docker Hub:
     *Note: This will automatically pull the image `hamzaak10/octagon-oracle-frontend:latest`.*
 
 3.  **Access the App**:
-    Open `http://localhost:3000` in your browser.
+    Open `http://localhost:3001` in your browser.
 
 
 
