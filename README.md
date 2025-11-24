@@ -60,7 +60,7 @@ Octagon Oracle is a cutting-edge web application designed to revolutionize how f
     ```
 
 5.  **Open your browser**
-    Navigate to `http://localhost:3000` to see the app in action.
+    Navigate to `http://localhost:3001` to see the app in action.
 
 ### 🐳 Running with Docker
 
