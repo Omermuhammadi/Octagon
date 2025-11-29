@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  web:
+    image: hamzaak10/octagon-oracle-frontend:latest
+    container_name: octagon-oracle-web
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+    # Add any other environment variables here, e.g.:
+    # - NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_key_here

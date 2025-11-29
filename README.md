@@ -1,115 +1,309 @@
-# Octagon Oracle 🥊🔮
+# 🥊 Octagon Oracle
 
-**The Ultimate AI-Powered MMA Analytics & Training Platform**
+> MMA Analytics Platform - Fight predictions, fighter comparisons, and training tools powered by data.
 
-## Overview
-Octagon Oracle is a cutting-edge web application designed to revolutionize how fighters train and how fans engage with Mixed Martial Arts. By leveraging advanced analytics and AI concepts, it provides tailored insights for two distinct user personas: **Coaches/Fighters** and **Fans/Learners**.
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
-## 🚀 Key Features
+## 📋 Table of Contents
 
-### For Coaches & Fighters 🥋
-*   **Advanced Dashboard**: Track training sessions, performance metrics, and upcoming bouts.
-*   **Fighter Comparison**: Deep-dive statistical analysis with radar charts comparing striking, grappling, and cardio.
-*   **Training Roadmaps**: Structured curriculum from amateur to pro levels.
-*   **Gym Finder**: Locate top-rated training facilities with Google Maps integration.
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Quick Start](#-quick-start)
+- [Installation Options](#-installation-options)
+- [Project Structure](#-project-structure)
+- [API Documentation](#-api-documentation)
+- [Contributing](#-contributing)
+- [License](#-license)
 
-### For Fans & Learners 📺
-*   **AI Predictions**: Data-driven fight outcome predictions with confidence scores and key victory factors.
-*   **Form Correction**: AI-powered webcam tool to analyze and improve striking technique (Jab, Cross, Hook).
-*   **Self-Defense Guide**: Curated resources for personal safety.
-*   **Interactive Polls & History**: Track your prediction accuracy against the AI.
+## ✨ Features
 
-## 🛠️ Tech Stack
-*   **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
-*   **Language**: [TypeScript](https://www.typescriptlang.org/)
-*   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-*   **Animations**: [Framer Motion](https://www.framer.com/motion/)
-*   **Icons**: [Lucide React](https://lucide.dev/)
-*   **Maps**: [Google Maps API](https://developers.google.com/maps)
-*   **State Management**: React Context API (`AuthContext`)
+- 🔮 **Fight Predictions** - AI-powered fight outcome predictions
+- 📊 **Fighter Comparison** - Compare fighter statistics side-by-side
+- 🏋️ **Training Tools** - Form correction and training programs
+- 📅 **Event Tracking** - Upcoming and past UFC events
+- 👤 **User Dashboards** - Personalized dashboards for fans and coaches
+- 🔐 **Authentication** - Secure JWT-based authentication
 
-## 🏁 Getting Started
+## 🛠 Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | Next.js 15, React 19, TypeScript, Tailwind CSS, Framer Motion |
+| **Backend** | Node.js, Express.js, TypeScript |
+| **Database** | MongoDB with Mongoose ODM |
+| **Auth** | JWT (JSON Web Tokens) |
+| **Container** | Docker & Docker Compose |
+
+## 🚀 Quick Start
 
 ### Prerequisites
-*   Node.js 18+ installed
-*   npm or yarn
 
-### Installation
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (recommended)
+- OR [Node.js 20+](https://nodejs.org/) and [MongoDB](https://www.mongodb.com/try/download/community)
+- Git
 
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/yourusername/octagon-oracle.git
-    cd octagon-oracle
-    ```
+### Option 1: Docker (Recommended) 🐳
 
-2.  **Install dependencies**
-    ```bash
-    npm install
-    ```
+The easiest way to run the entire application:
 
-3.  **Set up Environment Variables**
-    Create a `.env.local` file in the root directory and add your Google Maps API key:
-    ```env
-    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key_here
-    ```
-    *(Note: The current build uses a placeholder in `app/gyms/page.tsx`. For full functionality, replace it with a valid key.)*
+```bash
+# 1. Clone the repository
+git clone https://github.com/hamzanaeem10/Octagon-Oracle.git
+cd Octagon-Oracle
 
-4.  **Run the development server**
-    ```bash
-    npm run dev
-    ```
+# 2. Copy environment file
+cp .env.example .env
 
-5.  **Open your browser**
-    Navigate to `http://localhost:3000` to see the app in action.
+# 3. Start all services (MongoDB + Backend + Frontend)
+docker-compose up -d
 
-### 🐳 Running with Docker
+# 4. Wait for services to be healthy (about 30-60 seconds)
+docker-compose ps
 
-You can run the application using the pre-built image from Docker Hub:
+# 5. Import UFC data into MongoDB
+docker exec octagon-oracle-backend npm run import-data
+```
 
-1.  **Ensure Docker is running** on your machine.
-2.  **Run the container** using Docker Compose:
-    ```bash
-    docker compose up -d
-    ```
-    *Note: This will automatically pull the image `hamzaak10/octagon-oracle-frontend:latest`.*
+🎉 **That's it!** Open [http://localhost:3001](http://localhost:3001) in your browser.
 
-3.  **Access the App**:
-    Open `http://localhost:3001` in your browser.
+### Option 2: Local Development
 
+If you prefer running without Docker:
 
+#### Step 1: Install MongoDB
 
-## 📂 Project Structure
+**Windows:**
+```powershell
+# Using winget
+winget install MongoDB.Server
+
+# OR download from https://www.mongodb.com/try/download/community
+```
+
+**macOS:**
+```bash
+brew tap mongodb/brew
+brew install mongodb-community
+brew services start mongodb-community
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt-get install -y mongodb
+sudo systemctl start mongodb
+sudo systemctl enable mongodb
+```
+
+#### Step 2: Setup Backend
+
+```bash
+# Navigate to backend
+cd backend
+
+# Install dependencies
+npm install
+
+# Copy environment file
+cp .env.example .env
+
+# Import UFC data
+npm run import-data
+
+# Start development server
+npm run dev
+```
+
+#### Step 3: Setup Frontend
+
+```bash
+# Open new terminal, navigate to frontend
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+🎉 Open [http://localhost:3001](http://localhost:3001) in your browser.
+
+## 📁 Project Structure
 
 ```
 octagon-oracle/
-├── app/                # Next.js App Router pages
-│   ├── (auth)/         # Authentication routes (Login/Register)
-│   ├── dashboard/      # Role-based dashboards
-│   ├── comparison/     # Fighter comparison tool
-│   ├── form-check/     # AI camera analysis
-│   ├── gyms/           # Map integration
-│   ├── prediction/     # Fight predictions
-│   └── ...
-├── components/         # Reusable UI components
-│   ├── ui/             # Basic UI elements (Buttons, Cards, Inputs)
-│   ├── charts/         # Data visualization
-│   └── ...
-├── contexts/           # Global state (AuthContext)
-├── lib/                # Utilities and mock data
-└── public/             # Static assets (images, logos)
+├── 📂 backend/                 # Express.js API Server
+│   ├── src/
+│   │   ├── config/            # Database & app configuration
+│   │   ├── controllers/       # Route handlers
+│   │   ├── middleware/        # Auth & validation middleware
+│   │   ├── models/            # Mongoose schemas
+│   │   ├── routes/            # API route definitions
+│   │   └── scripts/           # Data import scripts
+│   ├── data/                  # CSV data files
+│   └── Dockerfile
+│
+├── 📂 frontend/               # Next.js Web Application
+│   ├── app/                   # Next.js app router pages
+│   ├── components/            # React components
+│   ├── contexts/              # React context providers
+│   ├── lib/                   # Utilities & API client
+│   └── Dockerfile
+│
+├── 📂 scripts/                # Database initialization
+│   └── mongo-init.js
+│
+├── docker-compose.yml         # Docker orchestration
+├── .env.example              # Environment template
+└── README.md
 ```
 
-## 🔮 Future Roadmap
-*   **Backend Integration**: Connect to a robust backend (Node.js/Python) for real-time user data persistence.
-*   **Live AI Models**: Integrate TensorFlow.js or PyTorch for real-time video pose estimation and predictive modeling.
-*   **Social Features**: Community forums, fight clubs, and leaderboard challenges.
-*   **Mobile App**: React Native adaptation for on-the-go training.
+## 🔌 API Documentation
+
+### Base URL
+- **Local:** `http://localhost:5001/api`
+- **Docker:** `http://localhost:5001/api`
+
+### Endpoints
+
+#### Health Check
+```
+GET /api/health
+```
+
+#### Authentication
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/register` | Register new user |
+| POST | `/api/auth/login` | Login user |
+| GET | `/api/auth/me` | Get current user (Auth required) |
+| PUT | `/api/auth/profile` | Update profile (Auth required) |
+
+#### Fighters
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/fighters` | Get all fighters (paginated) |
+| GET | `/api/fighters/search?q=name` | Search fighters |
+| GET | `/api/fighters/compare?fighter1=id&fighter2=id` | Compare two fighters |
+| GET | `/api/fighters/:id` | Get fighter by ID |
+
+#### Events
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/events` | Get all events (paginated) |
+| GET | `/api/events/upcoming` | Get upcoming events |
+| GET | `/api/events/recent` | Get recent events |
+| GET | `/api/events/search?q=name` | Search events |
+
+## 🔧 Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `NODE_ENV` | Environment mode | `development` |
+| `FRONTEND_PORT` | Frontend port | `3001` |
+| `BACKEND_PORT` | Backend port | `5001` |
+| `MONGO_PORT` | MongoDB port | `27017` |
+| `MONGODB_URI` | MongoDB connection string | `mongodb://localhost:27017/octagon-oracle` |
+| `JWT_SECRET` | JWT signing secret | (change in production!) |
+| `JWT_EXPIRES_IN` | Token expiration | `7d` |
+| `NEXT_PUBLIC_API_URL` | API URL for frontend | `http://localhost:5001/api` |
+
+## 🐳 Docker Commands
+
+```bash
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# View specific service logs
+docker-compose logs -f backend
+
+# Stop all services
+docker-compose down
+
+# Stop and remove volumes (clears database)
+docker-compose down -v
+
+# Rebuild images
+docker-compose up -d --build
+
+# Import data into MongoDB
+docker exec octagon-oracle-backend npm run import-data
+
+# Access MongoDB shell
+docker exec -it octagon-oracle-mongodb mongosh octagon-oracle
+```
+
+## 🗄️ MongoDB Guide
+
+### Using Docker (Automatic)
+MongoDB is automatically set up when you run `docker-compose up`. The database is:
+- **Pre-configured** with collections and indexes
+- **Persistent** - data survives container restarts
+- **Accessible** at `localhost:27017`
+
+### Using Local MongoDB
+
+1. **Install MongoDB** (see installation steps above)
+
+2. **Start MongoDB Service:**
+   ```bash
+   # Windows
+   net start MongoDB
+   
+   # macOS
+   brew services start mongodb-community
+   
+   # Linux
+   sudo systemctl start mongodb
+   ```
+
+3. **Connect to MongoDB:**
+   ```bash
+   mongosh mongodb://localhost:27017/octagon-oracle
+   ```
+
+4. **Useful MongoDB Commands:**
+   ```javascript
+   // Show all collections
+   show collections
+   
+   // Count fighters
+   db.fighters.countDocuments()
+   
+   // Search fighter
+   db.fighters.findOne({ name: /McGregor/i })
+   
+   // View upcoming events
+   db.events.find({ status: 'upcoming' }).sort({ date: 1 })
+   ```
+
+### Using MongoDB Atlas (Cloud)
+
+1. Create free account at [mongodb.com/atlas](https://www.mongodb.com/atlas)
+2. Create a free M0 cluster
+3. Get connection string
+4. Update `.env`:
+   ```
+   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/octagon-oracle
+   ```
 
 ## 🤝 Contributing
-Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📄 License
-This project is licensed under the MIT License.
+
+This project is licensed under the ISC License.
 
 ---
-*Built with ❤️ for the MMA Community.*
+
+<p align="center">
+  Made with ❤️ for MMA fans and fighters
+</p>
