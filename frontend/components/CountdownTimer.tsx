@@ -22,11 +22,11 @@ export function CountdownTimer() {
     }, []);
 
     return (
-        <div className="bg-black border border-white/20 p-6 min-w-[300px] text-center">
-            <div className="text-5xl font-display text-white tracking-widest mb-1">
+        <div className="bg-black/60 backdrop-blur-sm border border-white/20 px-8 py-4 rounded-lg">
+            <div className="text-5xl md:text-6xl font-display text-white tracking-widest mb-1">
                 {String(timeLeft.hours).padStart(2, '0')}:{String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}
             </div>
-            <div className="flex justify-center gap-8 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+            <div className="flex justify-center gap-12 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                 <span>Hrs</span>
                 <span>Min</span>
                 <span>Sec</span>

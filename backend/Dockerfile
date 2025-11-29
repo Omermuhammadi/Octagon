@@ -29,6 +29,9 @@ RUN npm ci --only=production
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist
 
+# Copy data files for import script
+COPY --from=builder /app/data ./data
+
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001

@@ -14,10 +14,23 @@ const app: Application = express();
 // Security Middleware
 app.use(helmet());
 
-// CORS configuration
+// CORS configuration - allow both Docker (3001) and local dev (3000)
+const allowedOrigins = [
+  config.frontendUrl,
+  'http://localhost:3000',
+  'http://localhost:3001',
+];
+
 app.use(
   cors({
-    origin: config.frontendUrl,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],

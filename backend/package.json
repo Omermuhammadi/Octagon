@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "lint": "eslint src/**/*.ts",
-    "import-data": "ts-node src/scripts/importData.ts"
+    "import-data": "ts-node src/scripts/importData.ts",
+    "import-data:prod": "node dist/scripts/importData.js"
   },
   "keywords": ["mma", "ufc", "analytics", "api"],
   "author": "",

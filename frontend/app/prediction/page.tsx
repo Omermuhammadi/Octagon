@@ -5,7 +5,8 @@ import { Card } from "@/components/ui/Card";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { ArrowRight, TrendingUp, AlertTriangle, BarChart2, Brain, Target, Share2, Download, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import gsap from "gsap";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
@@ -14,12 +15,55 @@ export default function PredictionPage() {
     const [persona, setPersona] = useState<"FAN" | "COACH">("FAN");
     const { isAuthenticated, isLoading } = useAuth();
     const router = useRouter();
+    
+    // Refs for GSAP animations
+    const heroTextRef = useRef<HTMLDivElement>(null);
+    const fighterNameRef = useRef<HTMLHeadingElement>(null);
 
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
             router.push("/login");
         }
     }, [isLoading, isAuthenticated, router]);
+
+    // GSAP Split Text Animation for Hero
+    useEffect(() => {
+        if (!isLoading && isAuthenticated && fighterNameRef.current) {
+            // Split text animation for fighter names
+            const text = fighterNameRef.current;
+            const chars = text.innerText.split('');
+            text.innerHTML = chars.map(char => 
+                char === ' ' ? ' ' : `<span class="inline-block opacity-0">${char}</span>`
+            ).join('');
+            
+            gsap.fromTo(
+                text.querySelectorAll('span'),
+                { 
+                    opacity: 0, 
+                    y: 50,
+                    rotateX: -90
+                },
+                { 
+                    opacity: 1, 
+                    y: 0,
+                    rotateX: 0,
+                    duration: 0.8,
+                    stagger: 0.03,
+                    ease: "back.out(1.7)",
+                    delay: 0.3
+                }
+            );
+
+            // Animate the "NEXT LIVE EVENT" label
+            if (heroTextRef.current) {
+                gsap.fromTo(
+                    heroTextRef.current.querySelector('.event-label'),
+                    { opacity: 0, y: -20 },
+                    { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
+                );
+            }
+        }
+    }, [isLoading, isAuthenticated]);
 
     // Show loading while checking auth state
     if (isLoading || !isAuthenticated) {
@@ -32,30 +76,32 @@ export default function PredictionPage() {
 
     return (
         <div className="min-h-screen bg-black pt-16">
-            {/* FEATURED FIGHT HERO */}
-            <section className="relative h-[70vh] flex flex-col items-center justify-center overflow-hidden border-b border-white/10">
-                <div className="absolute inset-0 bg-neutral-900/20" />
+            {/* FEATURED FIGHT HERO - Full Screen */}
+            <section className="relative h-screen flex flex-col items-center justify-center overflow-hidden">
+                {/* Background Image */}
+                <div className="absolute inset-0 bg-[url('/images/octagon-bg.jpg')] bg-cover bg-center opacity-30" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black" />
 
-                <div className="relative z-10 text-center mb-8">
-                    <div className="text-octagon-red font-heading font-bold tracking-widest text-sm mb-2 animate-pulse">NEXT LIVE EVENT</div>
-                    <h1 className="text-5xl md:text-7xl font-display uppercase italic text-white leading-none mb-6">
-                        TSARUKYAN <span className="text-gray-500 not-italic text-3xl align-middle mx-2">VS</span> HOOKER
+                <div ref={heroTextRef} className="relative z-10 text-center mb-8 mt-16 md:mt-24">
+                    <div className="event-label text-octagon-red font-heading font-bold tracking-widest text-sm mb-3 animate-pulse">NEXT LIVE EVENT</div>
+                    <h1 ref={fighterNameRef} className="text-5xl md:text-7xl font-display uppercase italic text-white leading-none mb-8" style={{ perspective: '1000px' }}>
+                        TSARUKYAN VS HOOKER
                     </h1>
                     <div className="flex justify-center">
                         <CountdownTimer />
                     </div>
                 </div>
 
-                <div className="relative z-10 grid grid-cols-2 gap-20 items-end h-[300px]">
+                <div className="relative z-10 grid grid-cols-2 gap-20 md:gap-40 items-end h-[350px] md:h-[450px]">
                     <img
                         src="/images/tsarukyan.png"
                         alt="Tsarukyan"
-                        className="h-full object-contain drop-shadow-[0_0_15px_rgba(210,10,10,0.3)] mask-image-gradient-b"
+                        className="h-full object-contain drop-shadow-[0_0_30px_rgba(210,10,10,0.5)]"
                     />
                     <img
                         src="/images/hooker.png"
                         alt="Hooker"
-                        className="h-full object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.3)] mask-image-gradient-b"
+                        className="h-full object-contain drop-shadow-[0_0_30px_rgba(59,130,246,0.5)]"
                     />
                 </div>
             </section>

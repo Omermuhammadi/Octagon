@@ -4,6 +4,19 @@ import mongoose from 'mongoose';
 import { config } from '../config';
 import { Fighter, Event, FightStats } from '../models';
 
+// Determine the data directory path (works in both dev and production)
+// In dev: src/scripts/importData.ts -> ../../data
+// In prod: dist/scripts/importData.js -> ../../data (data folder copied to root)
+const getDataPath = (filename: string): string => {
+  // First try relative to project root (production Docker setup)
+  const rootPath = path.join(process.cwd(), 'data', filename);
+  if (fs.existsSync(rootPath)) {
+    return rootPath;
+  }
+  // Fallback to relative to __dirname (development)
+  return path.join(__dirname, '../../data', filename);
+};
+
 // CSV parsing helper
 function parseCSV(content: string): Record<string, string>[] {
   const lines = content.split('\n').filter(line => line.trim());
@@ -81,7 +94,8 @@ const parsePct = (value: string): number => {
 
 async function importFighters() {
   console.log('📥 Importing fighters...');
-  const filePath = path.join(__dirname, '../../data/fighters.csv');
+  const filePath = getDataPath('fighters.csv');
+  console.log(`  Reading from: ${filePath}`);
   const fileContent = fs.readFileSync(filePath, 'utf-8');
   
   const records = parseCSV(fileContent);
@@ -130,7 +144,8 @@ async function importFighters() {
 
 async function importEvents() {
   console.log('📥 Importing events...');
-  const filePath = path.join(__dirname, '../../data/events.csv');
+  const filePath = getDataPath('events.csv');
+  console.log(`  Reading from: ${filePath}`);
   const fileContent = fs.readFileSync(filePath, 'utf-8');
   
   const records = parseCSV(fileContent);
@@ -168,7 +183,8 @@ async function importEvents() {
 
 async function importFightStats() {
   console.log('📥 Importing fight stats...');
-  const filePath = path.join(__dirname, '../../data/fightstats.csv');
+  const filePath = getDataPath('fightstats.csv');
+  console.log(`  Reading from: ${filePath}`);
   const fileContent = fs.readFileSync(filePath, 'utf-8');
   
   const records = parseCSV(fileContent);

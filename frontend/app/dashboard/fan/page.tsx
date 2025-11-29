@@ -4,11 +4,12 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { Target, TrendingUp, Calendar, Star, Zap, Camera, Trophy, Clock, ChevronRight, Flame, Award } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { eventApi, Event } from "@/lib/api";
+import gsap from "gsap";
 
 // Animation variants for staggered children
 const containerVariants = {
@@ -29,6 +30,8 @@ export default function FanDashboard() {
     const router = useRouter();
     const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
     const [loadingEvents, setLoadingEvents] = useState(true);
+    const titleRef = useRef<HTMLHeadingElement>(null);
+    const [titleAnimated, setTitleAnimated] = useState(false);
 
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
@@ -37,6 +40,32 @@ export default function FanDashboard() {
             router.push("/dashboard/coach");
         }
     }, [isAuthenticated, isLoading, user, router]);
+
+    // GSAP Split Text Animation for Dashboard Title
+    useEffect(() => {
+        if (!isLoading && user && titleRef.current && !titleAnimated) {
+            setTitleAnimated(true);
+            const title = titleRef.current;
+            const text = title.innerText;
+            const chars = text.split('');
+            title.innerHTML = chars.map(char => 
+                char === ' ' ? ' ' : `<span class="inline-block opacity-0">${char}</span>`
+            ).join('');
+            
+            gsap.fromTo(
+                title.querySelectorAll('span'),
+                { opacity: 0, y: 40, rotateX: -90 },
+                { 
+                    opacity: 1, 
+                    y: 0, 
+                    rotateX: 0,
+                    duration: 0.6,
+                    stagger: 0.04,
+                    ease: "back.out(1.7)"
+                }
+            );
+        }
+    }, [isLoading, user, titleAnimated]);
 
     // Fetch upcoming events
     useEffect(() => {
@@ -126,8 +155,8 @@ export default function FanDashboard() {
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                         <div>
                             <div className="flex items-center gap-3 mb-2">
-                                <h1 className="text-4xl sm:text-5xl font-display italic text-white">
-                                    FAN <span className="text-octagon-red">DASHBOARD</span>
+                                <h1 ref={titleRef} className="text-4xl sm:text-5xl font-display italic text-white" style={{ perspective: '1000px' }}>
+                                    FAN DASHBOARD
                                 </h1>
                             </div>
                             <p className="text-gray-400 flex items-center gap-2">
