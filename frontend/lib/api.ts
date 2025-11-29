@@ -154,6 +154,18 @@ export const authApi = {
       body: data,
       token,
     }),
+
+  forgotPassword: (email: string) =>
+    apiRequest<{ resetCode?: string }>('/auth/forgot-password', {
+      method: 'POST',
+      body: { email },
+    }),
+
+  resetPassword: (data: { email: string; code: string; newPassword: string }) =>
+    apiRequest('/auth/reset-password', {
+      method: 'POST',
+      body: data,
+    }),
 };
 
 // Fighter types

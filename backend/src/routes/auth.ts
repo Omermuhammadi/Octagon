@@ -6,6 +6,8 @@ import {
   getMe,
   updateProfile,
   changePassword,
+  forgotPassword,
+  resetPassword,
 } from '../controllers';
 import { protect } from '../middleware';
 
@@ -66,9 +68,40 @@ const changePasswordValidation = [
     .withMessage('New password must be at least 6 characters'),
 ];
 
+const forgotPasswordValidation = [
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required')
+    .isEmail()
+    .withMessage('Please provide a valid email'),
+];
+
+const resetPasswordValidation = [
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required')
+    .isEmail()
+    .withMessage('Please provide a valid email'),
+  body('code')
+    .trim()
+    .notEmpty()
+    .withMessage('Reset code is required')
+    .isLength({ min: 6, max: 6 })
+    .withMessage('Reset code must be 6 digits'),
+  body('newPassword')
+    .notEmpty()
+    .withMessage('New password is required')
+    .isLength({ min: 6 })
+    .withMessage('New password must be at least 6 characters'),
+];
+
 // Routes
 router.post('/register', registerValidation, register);
 router.post('/login', loginValidation, login);
+router.post('/forgot-password', forgotPasswordValidation, forgotPassword);
+router.post('/reset-password', resetPasswordValidation, resetPassword);
 router.get('/me', protect, getMe);
 router.put('/profile', protect, updateProfileValidation, updateProfile);
 router.put('/password', protect, changePasswordValidation, changePassword);

@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 
 export type UserRole = 'coach' | 'fan';
 export type ExperienceLevel = 'Beginner' | 'Intermediate' | 'Advanced' | 'Professional';
@@ -13,6 +14,9 @@ export interface IUser extends Document {
   role: UserRole;
   avatar?: string;
   joinDate: Date;
+  // Password reset fields
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
   // Extended profile fields
   experienceLevel?: ExperienceLevel;
   trainingGoal?: TrainingGoal;
@@ -25,6 +29,7 @@ export interface IUser extends Document {
   accuracyRate: number;
   daysActive: number;
   comparePassword(candidatePassword: string): Promise<boolean>;
+  createPasswordResetToken(): string;
 }
 
 const userSchema = new Schema<IUser>(
@@ -62,6 +67,15 @@ const userSchema = new Schema<IUser>(
     joinDate: {
       type: Date,
       default: Date.now,
+    },
+    // Password reset fields
+    resetPasswordToken: {
+      type: String,
+      select: false,
+    },
+    resetPasswordExpires: {
+      type: Date,
+      select: false,
     },
     // Extended profile fields
     experienceLevel: {
@@ -126,6 +140,23 @@ userSchema.methods.comparePassword = async function (
   candidatePassword: string
 ): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.password);
+};
+
+// Create password reset token
+userSchema.methods.createPasswordResetToken = function (): string {
+  // Generate random 6-digit code for easier user entry
+  const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+  
+  // Hash the code before storing
+  this.resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(resetCode)
+    .digest('hex');
+  
+  // Token expires in 1 hour
+  this.resetPasswordExpires = new Date(Date.now() + 60 * 60 * 1000);
+  
+  return resetCode;
 };
 
 export const User = mongoose.model<IUser>('User', userSchema);

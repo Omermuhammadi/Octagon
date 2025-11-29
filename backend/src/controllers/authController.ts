@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { validationResult } from 'express-validator';
 import { User } from '../models';
 import { config } from '../config';
@@ -286,6 +287,103 @@ export const changePassword = async (
     });
   } catch (error) {
     console.error('ChangePassword error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+    });
+  }
+};
+
+/**
+ * @desc    Forgot password - send reset code
+ * @route   POST /api/auth/forgot-password
+ * @access  Public
+ */
+export const forgotPassword = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      // Don't reveal if email exists or not for security
+      res.status(200).json({
+        success: true,
+        message: 'If an account with that email exists, a reset code has been generated',
+      });
+      return;
+    }
+
+    // Generate reset token
+    const resetCode = user.createPasswordResetToken();
+    await user.save({ validateBeforeSave: false });
+
+    // In production, you would send this via email
+    // For now, we'll log it and return it in development
+    console.log(`\n📧 Password Reset Code for ${email}: ${resetCode}\n`);
+
+    res.status(200).json({
+      success: true,
+      message: 'If an account with that email exists, a reset code has been generated',
+      // Only include code in development for testing
+      ...(process.env.NODE_ENV !== 'production' && { resetCode }),
+    });
+  } catch (error) {
+    console.error('ForgotPassword error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+    });
+  }
+};
+
+/**
+ * @desc    Reset password with code
+ * @route   POST /api/auth/reset-password
+ * @access  Public
+ */
+export const resetPassword = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { email, code, newPassword } = req.body;
+
+    // Hash the provided code to compare with stored hash
+    const hashedCode = crypto
+      .createHash('sha256')
+      .update(code)
+      .digest('hex');
+
+    const user = await User.findOne({
+      email,
+      resetPasswordToken: hashedCode,
+      resetPasswordExpires: { $gt: Date.now() },
+    }).select('+resetPasswordToken +resetPasswordExpires');
+
+    if (!user) {
+      res.status(400).json({
+        success: false,
+        message: 'Invalid or expired reset code',
+      });
+      return;
+    }
+
+    // Update password and clear reset fields
+    user.password = newPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Password reset successful. You can now login with your new password.',
+    });
+  } catch (error) {
+    console.error('ResetPassword error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error',
