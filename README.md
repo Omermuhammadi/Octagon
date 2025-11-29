@@ -169,35 +169,93 @@ GET /api/health → { "status": "healthy", "timestamp": "..." }
 
 ## 🖥️ Local Development (Without Docker)
 
-If you prefer running without Docker:
+If you prefer running without Docker or don't have enough disk space:
 
 ### Prerequisites
-- Node.js 20+
-- MongoDB 7+ (running locally or Atlas)
+- **Node.js 20+** ([Download](https://nodejs.org/))
+- **MongoDB 7+** - Either:
+  - Local installation ([Download](https://www.mongodb.com/try/download/community))
+  - OR MongoDB Atlas free tier ([Create Account](https://www.mongodb.com/cloud/atlas))
 
-### Backend Setup
+### Step 1: Clone the Repository
+```bash
+git clone https://github.com/Omermuhammadi/Octagon.git
+cd Octagon
+```
+
+### Step 2: Setup MongoDB
+
+**Option A - Local MongoDB:**
+```bash
+# Make sure MongoDB is running
+# Windows: Check if MongoDB service is running in Services
+# Mac: brew services start mongodb-community
+# Linux: sudo systemctl start mongod
+```
+
+**Option B - MongoDB Atlas (Cloud - Free):**
+1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. Create a free cluster
+3. Get your connection string (looks like: `mongodb+srv://user:pass@cluster.xxxxx.mongodb.net/octagon-oracle`)
+
+### Step 3: Setup Backend
 ```bash
 cd backend
 npm install
+```
 
-# Create .env file with:
-# MONGODB_URI=mongodb://localhost:27017/octagon-oracle
-# JWT_SECRET=your-secret-key-at-least-32-characters
-# PORT=5001
+Create a `.env` file in the `backend` folder:
+```env
+MONGODB_URI=mongodb://localhost:27017/octagon-oracle
+JWT_SECRET=your-super-secret-jwt-key-at-least-32-characters-long
+JWT_EXPIRES_IN=7d
+PORT=5001
+```
+> **Note:** If using MongoDB Atlas, replace `MONGODB_URI` with your Atlas connection string.
 
+Import the UFC data and start the server:
+```bash
 npm run import-data
 npm run dev
 ```
+✅ Backend should be running at **http://localhost:5001**
 
-### Frontend Setup
+### Step 4: Setup Frontend (New Terminal)
 ```bash
 cd frontend
 npm install
+```
 
-# Create .env.local file with:
-# NEXT_PUBLIC_API_URL=http://localhost:5001/api
+Create a `.env.local` file in the `frontend` folder:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5001/api
+```
 
+Start the development server:
+```bash
 npm run dev
+```
+✅ Frontend should be running at **http://localhost:3000**
+
+### Step 5: Test the Application
+1. Open **http://localhost:3000** in your browser
+2. Click **"Get Started"** to register
+3. Choose **Fan** or **Coach** role
+4. Explore the platform!
+
+### 📋 Quick Commands Reference (Local)
+
+```bash
+# Backend (Terminal 1)
+cd backend
+npm run dev          # Start dev server
+npm run import-data  # Re-import UFC data
+
+# Frontend (Terminal 2)
+cd frontend
+npm run dev          # Start dev server (port 3000)
+npm run build        # Build for production
+npm run lint         # Check for linting errors
 ```
 
 ---

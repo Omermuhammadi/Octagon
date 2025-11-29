@@ -34,7 +34,7 @@ COPY --from=builder /app/data ./data
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
+    adduser -S -u 1001 -G nodejs nodejs
 
 USER nodejs
 
