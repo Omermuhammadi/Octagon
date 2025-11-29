@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { PasswordStrength, isPasswordStrong } from "@/components/ui/PasswordStrength";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -54,8 +55,8 @@ export default function ForgotPasswordPage() {
             return;
         }
 
-        if (newPassword.length < 6) {
-            setError("Password must be at least 6 characters");
+        if (!isPasswordStrong(newPassword)) {
+            setError("Please create a stronger password that meets all requirements");
             return;
         }
 
@@ -222,6 +223,7 @@ export default function ForgotPasswordPage() {
                                         required
                                         className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-octagon-red focus:ring-octagon-red"
                                     />
+                                    <PasswordStrength password={newPassword} className="mt-3" />
                                 </div>
 
                                 <div>

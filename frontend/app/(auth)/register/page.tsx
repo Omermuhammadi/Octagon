@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { PasswordStrength, isPasswordStrong } from "@/components/ui/PasswordStrength";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -41,6 +42,13 @@ export default function RegisterPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
+
+        // Validate password strength
+        if (!isPasswordStrong(password)) {
+            setError("Please create a stronger password that meets all requirements");
+            return;
+        }
+
         setIsLoading(true);
 
         try {
@@ -147,6 +155,7 @@ export default function RegisterPage() {
                                 required
                                 className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-octagon-gold focus:ring-octagon-gold"
                             />
+                            <PasswordStrength password={password} className="mt-3" />
                         </div>
 
                         {/* Role Selection */}

@@ -13,6 +13,10 @@ import { protect } from '../middleware';
 
 const router = Router();
 
+// Strong password regex: min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 symbol
+const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+const passwordRequirementsMessage = 'Password must be at least 8 characters with 1 uppercase, 1 lowercase, 1 number, and 1 symbol';
+
 // Validation rules
 const registerValidation = [
   body('name')
@@ -30,8 +34,8 @@ const registerValidation = [
   body('password')
     .notEmpty()
     .withMessage('Password is required')
-    .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters'),
+    .matches(strongPasswordRegex)
+    .withMessage(passwordRequirementsMessage),
   body('role')
     .optional()
     .isIn(['coach', 'fan'])
@@ -64,8 +68,8 @@ const changePasswordValidation = [
   body('newPassword')
     .notEmpty()
     .withMessage('New password is required')
-    .isLength({ min: 6 })
-    .withMessage('New password must be at least 6 characters'),
+    .matches(strongPasswordRegex)
+    .withMessage(passwordRequirementsMessage),
 ];
 
 const forgotPasswordValidation = [
@@ -93,8 +97,8 @@ const resetPasswordValidation = [
   body('newPassword')
     .notEmpty()
     .withMessage('New password is required')
-    .isLength({ min: 6 })
-    .withMessage('New password must be at least 6 characters'),
+    .matches(strongPasswordRegex)
+    .withMessage(passwordRequirementsMessage),
 ];
 
 // Routes
